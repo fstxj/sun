@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 898b901ad3111fe4bbafe1a9b21a29f5
+timeCreated: 1510111539
+licenseType: Pro
+ShaderImporter:
+  defaultTextures:
+  - _tietu1: {fileID: -149408875, guid: be3e83bd31366e843980a0fcf24f3bbd, type: 3}
+  - _faxianliudong: {fileID: 342693502, guid: dbeab6103ce85ec4793b07ead1c4109f, type: 3}
+  - _miaobian: {fileID: 2800000, guid: e3d678eae02b69e44a347aea22df66c5, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

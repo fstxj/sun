@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 5f057462eb018f94b90c883fbceaf58f
+timeCreated: 1510559620
+licenseType: Pro
+ShaderImporter:
+  defaultTextures:
+  - _Touguang: {fileID: 2800000, guid: a83f18bd1268e0f498974f79cae51144, type: 3}
+  - _Normal: {fileID: 479454603, guid: d5f73501b2f2e354b91889cc5a859ee4, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
