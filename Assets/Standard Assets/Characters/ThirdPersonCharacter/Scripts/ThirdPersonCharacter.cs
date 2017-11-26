@@ -2,10 +2,11 @@ using UnityEngine;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
 {
-	[RequireComponent(typeof(Rigidbody))]
-	[RequireComponent(typeof(CapsuleCollider))]
-	[RequireComponent(typeof(Animator))]
-	public class ThirdPersonCharacter : MonoBehaviour
+
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(CapsuleCollider))]
+    [RequireComponent(typeof(Animator))]
+    public class ThirdPersonCharacter : MonoBehaviour
 	{
 		[SerializeField] float m_MovingTurnSpeed = 360;
 		[SerializeField] float m_StationaryTurnSpeed = 180;
@@ -15,8 +16,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		[SerializeField] float m_MoveSpeedMultiplier = 1f;
 		[SerializeField] float m_AnimSpeedMultiplier = 1f;
 		[SerializeField] float m_GroundCheckDistance = 0.1f;
-
-		Rigidbody m_Rigidbody;
+        [SerializeField] GameObject mesh0;
+        Rigidbody m_Rigidbody;
 		Animator m_Animator;
 		bool m_IsGrounded;
 		float m_OrigGroundCheckDistance;
@@ -28,28 +29,69 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		Vector3 m_CapsuleCenter;
 		CapsuleCollider m_Capsule;
 		bool m_Crouching;
-
-
-		void Start()
+        GameObject light;
+        GameObject a;
+        Mesh temp;
+        void Start()
 		{
 			m_Animator = GetComponent<Animator>();
 			m_Rigidbody = GetComponent<Rigidbody>();
 			m_Capsule = GetComponent<CapsuleCollider>();
 			m_CapsuleHeight = m_Capsule.height;
 			m_CapsuleCenter = m_Capsule.center;
-
-			m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+            a = GameObject.Find("EthanBody");
+            m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 			m_OrigGroundCheckDistance = m_GroundCheckDistance;
+            light = GameObject.Find("Light");
+           temp = a.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+            //Debug.Log(light);
 		}
 
 
 		public void Move(Vector3 move, bool crouch, bool jump)
 		{
 
-			// convert the world relative moveInput vector into a local-relative
-			// turn amount and forward amount required to head in the desired
-			// direction.
-			if (move.magnitude > 1f) move.Normalize();
+            // convert the world relative moveInput vector into a local-relative
+            // turn amount and forward amount required to head in the desired
+            // direction.
+            Vector3 lightdirection;
+            
+            lightdirection.x = light.GetComponent<Transform>().forward.x;
+            lightdirection.y = light.GetComponent<Transform>().forward.y;
+            lightdirection.z = light.GetComponent<Transform>().forward.z;
+            //lightdirection = light.GetComponent<Transform>().TransformPoint(lightdirection);
+            Debug.Log("light"+lightdirection);
+            Ray ray = new Ray(GetComponent<Transform>().position+new Vector3(0,1,0),-lightdirection);
+            RaycastHit[] rayhit;
+            rayhit = Physics.RaycastAll(ray);
+            bool flag = true;
+            
+            foreach (RaycastHit hit in rayhit)//发射一条3D射线  
+            {
+                GameObject interactedObject = hit.collider.gameObject;//获得射线 碰撞 到的物体  
+
+                if (interactedObject.tag != "Player")//判断物体 的标签  
+                {
+                    flag = false;
+                   // Debug.Log("hit.point="+hit.point);
+                    // Debug.Log(hit.ToString());
+                    Debug.Log(interactedObject.name);
+                    Debug.DrawLine(ray.origin, interactedObject.GetComponent<Transform>().position,Color.blue);
+                    Debug.DrawRay(ray.origin, interactedObject.GetComponent<Transform>().position,Color.red);
+                    a.GetComponent<SkinnedMeshRenderer>().sharedMesh =GameObject.Find("EthanGlasses").GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                    //interactedObject.GetComponent<Renderer>().material.color = Color.blue;
+                    
+                    //interactedObject.GetComponent<Transform>().transform.Translate(x/10, y/10, z/10);
+
+                }
+
+            }
+            if (flag == true)
+            {
+                a.GetComponent<SkinnedMeshRenderer>().sharedMesh = temp;
+            }
+            Debug.Log("flag"+flag);
+            if (move.magnitude > 1f) move.Normalize();
 			move = transform.InverseTransformDirection(move);
 			CheckGroundStatus();
 			move = Vector3.ProjectOnPlane(move, m_GroundNormal);
@@ -89,7 +131,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			{
 				Ray crouchRay = new Ray(m_Rigidbody.position + Vector3.up * m_Capsule.radius * k_Half, Vector3.up);
 				float crouchRayLength = m_CapsuleHeight - m_Capsule.radius * k_Half;
-				if (Physics.SphereCast(crouchRay, m_Capsule.radius * k_Half, crouchRayLength))
+				if (Physics.SphereCast(crouchRay, m_Capsule.radius * k_Half, crouchRayLength, Physics.AllLayers, QueryTriggerInteraction.Ignore))
 				{
 					m_Crouching = true;
 					return;
@@ -107,7 +149,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			{
 				Ray crouchRay = new Ray(m_Rigidbody.position + Vector3.up * m_Capsule.radius * k_Half, Vector3.up);
 				float crouchRayLength = m_CapsuleHeight - m_Capsule.radius * k_Half;
-				if (Physics.SphereCast(crouchRay, m_Capsule.radius * k_Half, crouchRayLength))
+				if (Physics.SphereCast(crouchRay, m_Capsule.radius * k_Half, crouchRayLength, Physics.AllLayers, QueryTriggerInteraction.Ignore))
 				{
 					m_Crouching = true;
 				}
